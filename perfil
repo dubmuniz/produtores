@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil do Produtor - Humana Horti</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <img src="https://humanabrasil.org/logo.png" alt="Humana Brasil" class="logo-small">
+            <div class="nav-links">
+                <a href="perfis.html">📋 Ver Produtores</a>
+                <a href="formulario.html">➕ Cadastrar</a>
+                <a href="#" onclick="logout()">🚪 Sair</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <a href="perfis.html" class="back-link">← Voltar para lista</a>
+        
+        <div id="perfilContent">
+            <!-- Conteúdo será carregado via JavaScript -->
+        </div>
+    </div>
+    
+    <script src="js/auth.js"></script>
+    <script>
+        // Verificar autenticação
+        checkAuth();
+        
+        // Pegar ID do produtor da URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const produtorId = urlParams.get('id');
+        
+        // Carregar dados do produtor
+        async function carregarPerfil() {
+            try {
+                const response = await fetch('data/produtores.json');
+                const produtores = await response.json();
+                const produtor = produtores.find(p => p.id === produtorId);
+                
+                if (!produtor) {
+                    document.getElementById('perfilContent').innerHTML = '<p>Produtor não encontrado.</p>';
+                    return;
+                }
+                
+                // Renderizar perfil
+                document.getElementById('perfilContent').innerHTML = `
+                    <div class="perfil-header">
+                        <h1>${produtor.nome}</h1>
+                        <div class="badges">
+                            ${produtor.certificacoes.map(cert => `<span class="badge badge-success">${cert}</span>`).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="perfil-grid">
+                        <div class="perfil-main">
+                            <section class="card">
+                                <h2>📋 Informações Básicas</h2>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <strong>CNPJ:</strong>
+                                        <span>${produtor.cnpj}</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <strong>Presidente:</strong>
+                                        <span>${produtor.presidente}</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <strong>Telefone:</strong>
+                                        <span>${produtor.telefone}</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <strong>E-mail:</strong>
+                                        <span>${produtor.email || 'Não informado'}</span>
+                                    </div>
+                                </div>
+                            </section>
+                            
+                            <section class="card">
+                                <h2>📍 Localização</h2>
+                                <p>${produtor.endereco}</p>
+                                <p>${produtor.cidade} - ${produtor.estado}</p>
+                                ${produtor.cep ? `<p>CEP: ${produtor.cep}</p>` : ''}
+                            </section>
+                            
+                            <section class="card">
+                                <h2>🌾 Produtos Fornecidos</h2>
+                                <div class="produtos-tags">
+                                    ${produtor.produtos.split(',').map(p => `<span class="tag">${p.trim()}</span>`).join('')}
+                                </div>
+                            </section>
+                            
+                            <section class="card">
+                                <h2>🌱 Práticas de Cultivo</h2>
+                                <p>${produtor.tecnicas}</p>
+                                
+                                <div class="praticas-grid">
+                                    <div class="pratica-item">
+                                        <strong>Defensivos:</strong>
+                                        <span class="badge ${produtor.defensivos === 'Não utiliza' ? 'badge-success' : 'badge-warning'}">
+                                            ${produtor.defensivos}
+                                        </span>
+                                    </div>
+                                    <div class="pratica-item">
+                                        <strong>Fertilizantes:</strong>
+                                        <span class="badge ${produtor.fertilizantes === 'Não utiliza' || produtor.fertilizantes === 'Orgânicos' ? 'badge-success' : 'badge-warning'}">
+                                            ${produtor.fertilizantes}
+                                        </span>
+                                    </div>
+                                </div>
+                            </section>
+                            
+                            ${produtor.observacoes ? `
+                                <section class="card">
+                                    <h2>📝 Observações</h2>
+                                    <p>${produtor.observacoes}</p>
+                                </section>
+                            ` : ''}
+                        </div>
+                        
+                        <div class="perfil-sidebar">
+                            ${produtor.fotos && produtor.fotos.length > 0 ? `
+                                <section class="card">
+                                    <h2>📸 Fotos dos Produtos</h2>
+                                    <div class="fotos-grid">
+                                        ${produtor.fotos.map(foto => `
+                                            <img src="${foto}" alt="Produto" class="foto-produto" onclick="openModal(this.src)">
+                                        `).join('')}
+                                    </div>
+                                </section>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error('Erro ao carregar perfil:', error);
+                document.getElementById('perfilContent').innerHTML = '<p>Erro ao carregar perfil.</p>';
+            }
+        }
+        
+        // Modal para fotos
+        function openModal(src) {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <span class="modal-close" onclick="this.parentElement.parentElement.remove()">&times;</span>
+                    <img src="${src}" alt="Foto ampliada">
+                </div>
+            `;
+            modal.onclick = (e) => {
+                if (e.target === modal) modal.remove();
+            };
+            document.body.appendChild(modal);
+        }
+        
+        carregarPerfil();
+    </script>
+</body>
+</html>
