@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produtores - Humana Horti</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <img src="https://humanabrasil.org/logo.png" alt="Humana Brasil" class="logo-small">
+            <div class="nav-links">
+                <a href="perfis.html" class="active">📋 Ver Produtores</a>
+                <a href="formulario.html">➕ Cadastrar</a>
+                <a href="#" onclick="logout()">🚪 Sair</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <div class="page-header">
+            <h1>🌱 Rede de Produtores</h1>
+            <p>Conheça os produtores e associações parceiras da Humana Horti</p>
+        </div>
+        
+        <div class="filters">
+            <input type="text" id="searchInput" placeholder="🔍 Buscar por nome, cidade ou produtos...">
+            
+            <select id="filterEstado">
+                <option value="">Todos os Estados</option>
+                <option value="BA">Bahia</option>
+                <option value="RJ">Rio de Janeiro</option>
+            </select>
+            
+            <select id="filterCert">
+                <option value="">Todas as Certificações</option>
+                <option value="Orgânico">Orgânico</option>
+                <option value="Fair Trade">Fair Trade</option>
+                <option value="Agroecológico">Agroecológico</option>
+            </select>
+        </div>
+        
+        <div id="produtoresGrid" class="produtores-grid">
+            <!-- Produtores serão carregados aqui -->
+            <div class="loading">Carregando produtores...</div>
+        </div>
+    </div>
+    
+    <script src="js/auth.js"></script>
+    <script src="js/perfis.js"></script>
+</body>
+</html>
